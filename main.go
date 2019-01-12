@@ -89,7 +89,12 @@ func getIPAddress(r *http.Request) string {
 			}
 		}
 	}
-	if rIP := net.ParseIP(strings.Split(r.RemoteAddr, ":")[0]); isPrivateIP(rIP) || !rIP.IsGlobalUnicast() {
+	ipStr := strings.Split(r.RemoteAddr, ":")[0]
+	log.Println("ipStr")
+	rIP := net.ParseIP(ipStr)
+	log.Println(rIP)
+
+	if isPrivateIP(rIP) || !rIP.IsGlobalUnicast() {
 		log.Println("Inside if block")
 		return rIP.String()
 	}
