@@ -80,14 +80,16 @@ func getIPAddress(r *http.Request) string {
 				log.Println(isPrivateIP(realIP))
 				if isPrivateIP(realIP) || !realIP.IsGlobalUnicast() {
 					// bad address, go next
+					log.Println("Bad address...")
 					continue
 				} else {
+					log.Println("Returning...")
 					return ip
 				}
 			}
 		}
 	}
-
+	log.Println("Outside for loop")
 	return strings.Split(r.RemoteAddr, ":")[0]
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
