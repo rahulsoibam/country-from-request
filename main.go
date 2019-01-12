@@ -90,6 +90,7 @@ func getIPAddress(r *http.Request) string {
 		}
 	}
 	log.Println("Outside for loop")
+	log.Println(r.RemoteAddr)
 	return strings.Split(r.RemoteAddr, ":")[0]
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
