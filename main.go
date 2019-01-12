@@ -59,7 +59,6 @@ func isPrivateIP(ip net.IP) bool {
 }
 
 func getIPAddress(r *http.Request) string {
-	log.Printf("This is r.RemoteAddr before loop %v", r.RemoteAddr)
 	var values []string
 	values = append(values, "X-Forwarded-For")
 	values = append(values, "X-Real-IP")
@@ -90,39 +89,10 @@ func getIPAddress(r *http.Request) string {
 			}
 		}
 	}
-	log.Println("Outside for loop")
-	log.Printf("This is r.RemoteAddr after loop %v", r.RemoteAddr)
-	return strings.Split(r.RemoteAddr, ":")[0]
-	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
-	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
-	// for _, h := range []string{"X-Forwarded-For", "X-Real-IP"} {
-	// 	addresses := strings.Split(r.Header.Get(http.CanonicalHeaderKey(h)), ",")
-	// 	log.Print("addresses:")
-	// 	log.Println(addresses)
-	// 	// go from right to left until we get a public address that will be the address right before our proxy or load balancer.
-	// 	for i := len(addresses) - 1; i >= 0; i-- {
-	// 		// Headers can contain spaces, so strip them out
-	// 		log.Printf("addresses[%d]:", i)
-	// 		log.Println(addresses[i])
-	// 		ip := strings.TrimSpace(addresses[i])
-	// 		log.Print("ip:")
-	// 		log.Println(ip)
-	// 		realIP := net.ParseIP(ip)
-	// 		log.Print("realIP:")
-	// 		log.Println(realIP)
-	// 		log.Print("IsGlobalUnicast")
-	// 		log.Println(realIP.IsGlobalUnicast())
-	// 		log.Print("isPrivateIP")
-	// 		log.Println(isPrivateIP(realIP))
-
-	// 		if !realIP.IsGlobalUnicast() || isPrivateIP(realIP) {
-	// 			// bad address, go to next
-	// 			continue
-	// 		}
-	// 		return ip
-	// 	}
-	// }
-	// return ""
+	if rIP := net.ParseIP(strings.Split(r.RemoteAddr, ":")[0]); isPrivateIP(rIP) || !rIP.IsGlobalUnicast() {
+		return rIP.String()
+	}
+	return ""
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
