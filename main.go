@@ -81,7 +81,7 @@ func getIPAddress(r *http.Request) string {
 		}
 	}
 
-	return r.RemoteAddr
+	return strings.Split(r.RemoteAddr, ":")[0]
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
 	// for _, h := range []string{"X-Forwarded-For", "X-Real-IP"} {
