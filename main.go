@@ -62,19 +62,26 @@ func isPrivateIP(ip net.IP) bool {
 }
 
 func getIPAddress(r *http.Request) string {
-	var ip string
+	var values []string
+	values = append(values, "X-Forwarded-For")
+	values = append(values, "X-Real-IP")
 
-	if xff := r.Header.Get(xForwardedFor); xff != "" {
-		i := strings.Index(xff, ", ")
-		if i == -1 {
-			i = len(xff)
+	for _, h := range values {
+		if xff := r.Header.Get(http.CanonicalHeaderKey(h)); xff != "" {
+			ips := strings.Split(xff, ", ")
+			for i := len(ips) - 1; i >= 0; i-- {
+				ip := strings.TrimSpace(ips[i])
+				realIP := net.ParseIP(ip)
+				if !realIP.IsGlobalUnicast() || isPrivateIP(realIP) {
+					// bad address, go next
+					continue
+				}
+				return ip
+			}
 		}
-		ip = xff[:i]
-	} else if xrip := r.Header.Get(xRealIP); xrip != "" {
-		ip = xrip
 	}
 
-	return ip
+	return r.RemoteAddr
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
 	// for _, h := range []string{"X-Forwarded-For", "X-Real-IP"} {
