@@ -96,9 +96,9 @@ func getIPAddress(r *http.Request) string {
 
 	if isPrivateIP(rIP) || !rIP.IsGlobalUnicast() {
 		log.Println("Inside if block")
-		return rIP.String()
+		return ""
 	}
-	return ""
+	return rIP.String()
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
