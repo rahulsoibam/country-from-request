@@ -12,9 +12,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-var xForwardedFor = http.CanonicalHeaderKey("X-Forwarded-For")
-var xRealIP = http.CanonicalHeaderKey("X-Real-IP")
-
 var privateIPBlocks []*net.IPNet
 
 func init() {
@@ -69,9 +66,18 @@ func getIPAddress(r *http.Request) string {
 	for _, h := range values {
 		if xff := r.Header.Get(http.CanonicalHeaderKey(h)); xff != "" {
 			ips := strings.Split(xff, ", ")
+			log.Print("ips:")
+			log.Println(ips)
 			for i := len(ips) - 1; i >= 0; i-- {
 				ip := strings.TrimSpace(ips[i])
 				realIP := net.ParseIP(ip)
+				log.Print("realIP:")
+				log.Println(realIP)
+
+				log.Print("IsGlobalUnicast")
+				log.Println(realIP.IsGlobalUnicast())
+				log.Print("isPrivateIP")
+				log.Println(isPrivateIP(realIP))
 				if !realIP.IsGlobalUnicast() || isPrivateIP(realIP) {
 					// bad address, go next
 					continue
