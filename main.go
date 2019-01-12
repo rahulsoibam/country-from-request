@@ -59,6 +59,7 @@ func isPrivateIP(ip net.IP) bool {
 }
 
 func getIPAddress(r *http.Request) string {
+	log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	for _, h := range []string{"X-Forwarded-For", "X-Real-IP"} {
 		addresses := strings.Split(r.Header.Get(http.CanonicalHeaderKey(h)), ",")
 		log.Print("addresses:")
