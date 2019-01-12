@@ -61,11 +61,17 @@ func isPrivateIP(ip net.IP) bool {
 func getIPAddress(r *http.Request) string {
 	for _, h := range []string{"X-Forwarded-For", "X-Real-Ip"} {
 		addresses := strings.Split(r.Header.Get(h), ",")
+		log.Println(addresses)
 		// go from right to left until we get a public address that will be the address right before our proxy or load balancer.
 		for i := len(addresses) - 1; i >= 0; i-- {
 			// Headers can contain spaces, so strip them out
+			log.Println(addresses[i])
 			ip := strings.TrimSpace(addresses[i])
+			log.Println(ip)
 			realIP := net.ParseIP(ip)
+			log.Println(realIP)
+			log.Println(realIP.IsGlobalUnicast())
+			log.Println(isPrivateIP(realIP))
 
 			if !realIP.IsGlobalUnicast() || isPrivateIP(realIP) {
 				// bad address, go to next
