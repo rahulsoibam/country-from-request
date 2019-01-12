@@ -78,11 +78,12 @@ func getIPAddress(r *http.Request) string {
 				log.Println(realIP.IsGlobalUnicast())
 				log.Print("isPrivateIP")
 				log.Println(isPrivateIP(realIP))
-				if !realIP.IsGlobalUnicast() || isPrivateIP(realIP) {
+				if isPrivateIP(realIP) || !realIP.IsGlobalUnicast() {
 					// bad address, go next
 					continue
+				} else {
+					return ip
 				}
-				return ip
 			}
 		}
 	}
