@@ -59,6 +59,7 @@ func isPrivateIP(ip net.IP) bool {
 }
 
 func getIPAddress(r *http.Request) string {
+	log.Printf("This is r.RemoteAddr before loop %v", r.RemoteAddr)
 	var values []string
 	values = append(values, "X-Forwarded-For")
 	values = append(values, "X-Real-IP")
@@ -90,7 +91,7 @@ func getIPAddress(r *http.Request) string {
 		}
 	}
 	log.Println("Outside for loop")
-	log.Println(r.RemoteAddr)
+	log.Printf("This is r.RemoteAddr after loop %v", r.RemoteAddr)
 	return strings.Split(r.RemoteAddr, ":")[0]
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Forwarded-For")))
 	// log.Println(r.Header.Get(http.CanonicalHeaderKey("X-Real-IP")))
